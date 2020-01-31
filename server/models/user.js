@@ -6,15 +6,30 @@ const bcrypt = require('bcrypt');
 class User {
 
   static async register(data) {
-    let hashedPassword = await bcrypt.hash(data.password, BCRYPT_WORK_FACTOR);
+    const duplicateCheck = await db.query(
+      `SELECT username FROM users
+        WHERE username = $1`,
+        [data.username]
+    );
+
+    if (duplicateCheck.rows[0]) {
+      const err = new Error(
+        `The username ${data.username} is taken.`);
+      err.status = 409;
+      throw err;
+    }
+
+    const hashedPassword = await bcrypt.hash(data.password, BCRYPT_WORK_FACTOR);
 
     const result = await db.query(
       `INSERT INTO users (
         username,
         password)
-        VALUES ($1, $2)`
+        VALUES ($1, $2)
+        RETURNING username, is_admin`,
       [data.username, hashedPassword]);
-
+    
+    console.log("DB INSERT RESULT", result);
     return result.rows[0];
   }
 
