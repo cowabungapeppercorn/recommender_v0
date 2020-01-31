@@ -4,6 +4,9 @@ const User = require('../models/user');
 const createToken = require('../helpers/createToken');
 
 
+/** CRUD ROUTES FOR USER **/
+
+
 router.get('/', async (req, res, next) => {
   try {
     const users = await User.getAll();
@@ -42,6 +45,17 @@ router.patch('/:username', async (req, res, next) => {
   try{
     const user = await User.update(req.params.username, req.body);
     return res.json({ user });
+  }
+  catch (e) {
+    return next(e);
+  }
+});
+
+
+router.delete('/:username', async (req, res, next) => {
+  try {
+    const user = await User.remove(req.params.username);
+    return res.json({ message: `User '${user.username}' deleted.` });
   }
   catch (e) {
     return next(e);

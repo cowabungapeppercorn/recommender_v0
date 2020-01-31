@@ -112,6 +112,22 @@ class User {
     return user;
   }
 
+
+  static async remove(username) {
+    let result = await db.query(
+      `DELETE FROM users
+        WHERE username = $1
+        RETURNING username`, [username]);
+
+    if (!result.rows.length) {
+      const notFound = new Error(`The user '${username}' cannot be found.`);
+      notFound.status = 404;
+      throw notFound;
+    }
+
+    return result.rows[0];
+  }
+
 }
 
 module.exports = User;
