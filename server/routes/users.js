@@ -37,4 +37,15 @@ router.post('/', async (req, res, next) => {
   }
 });
 
+
+router.patch('/:username', async (req, res, next) => {
+  try{
+    const user = await User.update(req.params.username, req.body);
+    return res.json({ user });
+  }
+  catch (e) {
+    return next(e);
+  }
+});
+
 module.exports = router;

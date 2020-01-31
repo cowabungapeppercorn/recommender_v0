@@ -1,6 +1,7 @@
 const db = require('../db');
 const { BCRYPT_WORK_FACTOR } = require('../config');
 const bcrypt = require('bcrypt');
+const partialUpdate = require('../helpers/partialUpdate');
 
 
 class User {
@@ -75,11 +76,39 @@ class User {
     const user = result.rows[0];
     
     if (!user) {
-      const error = new Error(`The user '${username}' cannot be found.`);
-      error.status = 404;
-      throw error;
+      const notFound = new Error(`The user '${username}' cannot be found.`);
+      notFound.status = 404;
+      throw notFound;
     }
     
+    return user;
+  }
+
+
+  static async update(username, data) {
+    if (data.password) {
+      data.password = await bcrypt.hash(data.password, BCRYPT_WORK_FACTOR);
+    }
+
+    const { query, values } = partialUpdate(
+      'users',
+      data,
+      'username',
+      username
+    );
+
+    const result = await db.query(query, values);
+    const user = result.rows[0];
+
+    if (!user) {
+      const notFound = new Error(`The user '${username}' cannot be found.`);
+      notFound.status = 404;
+      throw notFound;
+    }
+
+    delete user.password;
+    delete user.is_admin;
+
     return user;
   }
 
