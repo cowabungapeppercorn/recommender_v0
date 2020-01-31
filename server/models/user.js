@@ -29,7 +29,6 @@ class User {
         RETURNING username, is_admin`,
       [data.username, hashedPassword]);
     
-    console.log("DB INSERT RESULT", result);
     return result.rows[0];
   }
 
@@ -51,6 +50,37 @@ class User {
     const invalidPass = new Error("Invalid Credentials");
     invalidPass.status = 401;
     throw invalidPass;
+  }
+
+
+  static async getAll() {
+    const usersRes = await db.query(
+      `SELECT id, username FROM users
+        ORDER BY username`);
+
+    if (!usersRes.rows.length) {
+      const error = new Error("No users found.");
+      error.status = 404;
+      throw error;
+    }
+    
+    return usersRes.rows;
+  }
+
+
+  static async getByUsername(username) {
+    const result = await db.query(
+      `SELECT id, username FROM users
+        WHERE username = $1`, [username]);
+    const user = result.rows[0];
+    
+    if (!user) {
+      const error = new Error(`The user '${username}' cannot be found.`);
+      error.status = 404;
+      throw error;
+    }
+    
+    return user;
   }
 
 }

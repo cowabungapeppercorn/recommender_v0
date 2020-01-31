@@ -4,6 +4,28 @@ const User = require('../models/user');
 const createToken = require('../helpers/createToken');
 
 
+router.get('/', async (req, res, next) => {
+  try {
+    const users = await User.getAll();
+    return res.json({ users });
+  }
+  catch (e) {
+    return next (e);
+  }
+});
+
+
+router.get('/:username', async (req, res, next) => {
+  try {
+    const user = await User.getByUsername(req.params.username);
+    return res.json({ user });
+  }
+  catch(e) {
+    return next(e);
+  }
+});
+
+
 router.post('/', async (req, res, next) => {
   try {
     const user = await User.register(req.body);
