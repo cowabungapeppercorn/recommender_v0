@@ -5,8 +5,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const usersRoutes = require('./routes/users');
+const authRoutes = require('./routes/auth');
 
 app.use('/users/', usersRoutes);
+app.use('', authRoutes);
 
 /** 404 handler */
 
