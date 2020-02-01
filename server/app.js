@@ -5,9 +5,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const usersRoutes = require('./routes/users');
+const recommendationRoutes = require('./routes/recommendations');
 const authRoutes = require('./routes/auth');
 
-app.use('/users/', usersRoutes);
+app.use('/users', usersRoutes);
+app.use('/recommendations', recommendationRoutes);
 app.use('', authRoutes);
 
 /** 404 handler */
