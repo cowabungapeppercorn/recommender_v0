@@ -10,7 +10,7 @@ router.get('/:id', ensureLoggedIn, async (req, res, next) => {
     const rec = await Recommendation.getById(req.params.id);
     const user = await User.getByUsername(req.user.username);
 
-    if (rec.user_to === user.id || rec.user_from === user.id) {
+    if (rec.from.id === user.id || rec.to.id === user.id) {
       return res.json(rec);
     } else {
       const notAuthorizedErr = new Error("You are not authorized to perform that action.");
