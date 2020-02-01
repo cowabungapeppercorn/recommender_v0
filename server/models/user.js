@@ -36,7 +36,7 @@ class User {
 
   static async authenticate(data) {
     const result = await db.query(
-      `SELECT password FROM users
+      `SELECT username, password, is_admin FROM users
         WHERE username = $1`,
         [data.username]);
     const user = result.rows[0];
