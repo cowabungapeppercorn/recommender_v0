@@ -1,8 +1,11 @@
 const express = require('express');
+const { authenticateJWT } = require('./middleware/auth');
+
 const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(authenticateJWT);
 
 const usersRoutes = require('./routes/users');
 const recommendationRoutes = require('./routes/recommendations');
