@@ -2,7 +2,7 @@ const Router = require('express').Router;
 const router = new Router();
 const User = require('../models/user');
 const createToken = require('../helpers/createToken');
-const { ensureLoggedIn } = require('../middleware/auth');
+const { ensureLoggedIn, ensureCorrectUser } = require('../middleware/auth');
 
 
 /** CRUD ROUTES FOR USER **/
@@ -19,7 +19,7 @@ router.get('/', ensureLoggedIn, async (req, res, next) => {
 });
 
 
-router.get('/:username', async (req, res, next) => {
+router.get('/:username', ensureLoggedIn, async (req, res, next) => {
   try {
     const user = await User.getByUsername(req.params.username);
     return res.json({ user });
@@ -42,7 +42,7 @@ router.post('/', async (req, res, next) => {
 });
 
 
-router.patch('/:username', async (req, res, next) => {
+router.patch('/:username', ensureCorrectUser, async (req, res, next) => {
   try{
     const user = await User.update(req.params.username, req.body);
     return res.json({ user });
@@ -53,7 +53,7 @@ router.patch('/:username', async (req, res, next) => {
 });
 
 
-router.delete('/:username', async (req, res, next) => {
+router.delete('/:username', ensureCorrectUser, async (req, res, next) => {
   try {
     const user = await User.remove(req.params.username);
     return res.json({ message: `User '${user.username}' deleted.` });
