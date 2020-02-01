@@ -2,12 +2,13 @@ const Router = require('express').Router;
 const router = new Router();
 const User = require('../models/user');
 const createToken = require('../helpers/createToken');
+const { ensureLoggedIn } = require('../middleware/auth');
 
 
 /** CRUD ROUTES FOR USER **/
 
 
-router.get('/', async (req, res, next) => {
+router.get('/', ensureLoggedIn, async (req, res, next) => {
   try {
     const users = await User.getAll();
     return res.json({ users });
