@@ -7,8 +7,10 @@ CREATE TABLE users (
 
 CREATE TABLE recommendations (
   id SERIAL PRIMARY KEY,
-  user_to INTEGER NOT NULL REFERENCES users,
-  user_from INTEGER NOT NULL REFERENCES users,
+  user_to INTEGER NOT NULL REFERENCES users
+    ON DELETE CASCADE,
+  user_from INTEGER NOT NULL REFERENCES users
+    ON DELETE CASCADE,
   content TEXT NOT NULL
 );
 
