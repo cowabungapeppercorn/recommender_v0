@@ -7,12 +7,29 @@ const partialUpdate = require('../helpers/partialUpdate');
 class User {
 
   static async register(data) {
+    const argumentsCheck = (data) => {
+      let errMsg = "";
+      console.log("DATA", data);
+      if (!data.username) {
+        errMsg += " Must provide a username.";
+      }
+      if (!data.password) {
+        errMsg += " Must provide a password.";
+      }
+      if (errMsg.length > 0) {
+        const err = new Error(errMsg.slice(1));
+        err.status = 400;
+        throw err;
+      }
+    }
+
     const duplicateCheck = await db.query(
       `SELECT username FROM users
         WHERE username = $1`,
         [data.username]
     );
 
+    argumentsCheck(data);
     if (duplicateCheck.rows[0]) {
       const err = new Error(
         `The username ${data.username} is taken.`);
