@@ -9,7 +9,6 @@ class User {
   static async register(data) {
     const argumentsCheck = (data) => {
       let errMsg = "";
-      console.log("DATA", data);
       if (!data.username) {
         errMsg += " Must provide a username.";
       }
