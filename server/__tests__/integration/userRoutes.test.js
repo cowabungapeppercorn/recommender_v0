@@ -77,6 +77,39 @@ describe("User Routes Tests", () => {
       expect(response.body.users[0]).toHaveProperty("id");
       expect(response.body.users[0]).not.toHaveProperty("password");
     });
+
+    test("Returns 401 if not logged in", async () => {
+      const response = await request(app)
+        .get('/users');
+      expect(response.statusCode).toEqual(401);
+      expect(response.body.message).toEqual("You are not logged in.");
+    });
+  });
+
+  describe("GET /users/:username", () => {
+    test("Gets one user", async () => {
+      const response = await request(app)
+        .get('/users/tester')
+        .send({ _token });
+      const user = response.body.user;
+      expect(user.username).toEqual("tester");
+      expect(user.id).toEqual(1);
+    });
+
+    test("Returns 401 if not logged in", async () => {
+      const response = await request(app)
+        .get('/users/tester');
+      expect(response.statusCode).toEqual(401);
+      expect(response.body.message).toEqual("You are not logged in.");
+    });
+
+    test("Returns 404 if user not found", async () => {
+      const response = await request(app)
+        .get('/users/testeroni')
+        .send({ _token });
+      expect(response.statusCode).toEqual(404);
+      expect(response.body.message).toEqual("The user testeroni cannot be found.");
+    });
   });
 });
 
