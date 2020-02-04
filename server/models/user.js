@@ -111,7 +111,26 @@ class User {
     const recs = result.rows;
 
     if (!recs.length) {
-      const noRecsErr = new Error(`No recommendations found for user with id of ${id}`);
+      const noRecsErr = new Error(`No received recommendations found for user with id of ${id}`);
+      noRecsErr.status = 404;
+      throw noRecsErr;
+    }
+
+    return recs;
+  }
+
+
+  static async getAllSentRecs(id) {
+    const result = await db.query(
+      `SELECT r.id, r.user_to, r.content,
+              t.username AS username_to
+        FROM recommendations AS r
+        JOIN users as t ON r.user_to = t.id
+        WHERE r.user_from = $1`, [id]);
+    const recs = result.rows;
+
+    if (!recs.length) {
+      const noRecsErr = new Error(`No sent recommendations found for user with id of ${id}`);
       noRecsErr.status = 404;
       throw noRecsErr;
     }
