@@ -101,6 +101,25 @@ class User {
   }
 
 
+  static async getAllReceivedRecs(id) {
+    const result = await db.query(
+      `SELECT r.id, r.user_from, r.content,
+              f.username AS username_from
+        FROM recommendations AS r
+        JOIN users as f ON r.user_from = f.id
+        WHERE r.user_to = $1`, [id]);
+    const recs = result.rows;
+
+    if (!recs.length) {
+      const noRecsErr = new Error(`No recommendations found for user with id of ${id}`);
+      noRecsErr.status = 404;
+      throw noRecsErr;
+    }
+
+    return recs;
+  }
+
+
   static async update(id, data) {
     if (data.password) {
       data.password = await bcrypt.hash(data.password, BCRYPT_WORK_FACTOR);
