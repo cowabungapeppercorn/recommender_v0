@@ -111,14 +111,67 @@ describe("User Routes Tests", () => {
       expect(response.body.message).toEqual("The user with an id of 69420 cannot be found.");
     });
   });
-});
 
-/** LEFT OFF HERE 2/2 **/
-/** LEFT OFF HERE 2/2 **/
-/** LEFT OFF HERE 2/2 **/
-/** LEFT OFF HERE 2/2 **/
-/** LEFT OFF HERE 2/2 **/
-/** LEFT OFF HERE 2/2 **/
+  describe("PATCH /users/:id", () => {
+    test("Changes username correctly", async () => {
+      const response = await request(app)
+        .patch("/users/1")
+        .send({ _token, username: "testito" });
+      expect(response.statusCode).toEqual(200);
+      expect(response.body.id).toEqual(1);
+      expect(response.body.username).toEqual("testito");
+    });
+
+    test("Returns 401 if trying to patch different user", async () => {
+      await User.register({
+        username: "tester2",
+        password: "password"
+      });
+      const response = await request(app)
+        .patch("/users/2")
+        .send({ _token, username: "tester25" });
+      expect(response.statusCode).toEqual(401);
+      expect(response.body.message).toEqual("You are not authorized to perform that action.");
+    });
+
+    test("Returns 401 if token not sent", async () => {
+      const response = await request(app)
+        .patch("/users/1")
+        .send({ username: "testtesttest" });
+      expect(response.statusCode).toEqual(401);
+      expect(response.body.message).toEqual("You are not logged in.");
+    });
+  });
+
+  describe("DELETE /users/:id", () => {
+    test("Deletes user successfully", async () => {
+      const response = await request(app)
+        .delete("/users/1")
+        .send({ _token });
+      expect(response.statusCode).toEqual(200);
+      expect(response.body.message).toEqual("User 'tester' deleted.");
+    });
+
+    test("Returns 401 if trying to delete different user", async () => {
+      await User.register({
+        username: "tester2",
+        password: "password"
+      });
+      const response = await request(app)
+        .delete("/users/2")
+        .send({ _token });
+      expect(response.statusCode).toEqual(401);
+      expect(response.body.message).toEqual("You are not authorized to perform that action.");
+    });
+
+    test("Returns 401 if token not sent", async () => {
+      const response = await request(app)
+        .delete("/users/1");
+      expect(response.statusCode).toEqual(401);
+      expect(response.body.message).toEqual("You are not logged in.");
+    });
+  });
+});
 
 afterAll(async () => {
   await db.end();
