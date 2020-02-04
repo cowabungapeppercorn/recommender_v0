@@ -13,7 +13,7 @@ router.get('/:id', ensureLoggedIn, async (req, res, next) => {
     if (rec.from.id === user.id || rec.to.id === user.id) {
       return res.json(rec);
     } else {
-      const notAuthorizedErr = new Error("You are not authorized to perform that action.");
+      const notAuthorizedErr = new Error("You are not authorized to view this recommendation.");
       notAuthorizedErr.status = 401;
       throw notAuthorizedErr;
     }
