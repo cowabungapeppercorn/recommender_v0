@@ -16,6 +16,17 @@ router.get('/received', ensureLoggedIn, async (req, res, next) => {
 });
 
 
+router.get('/sent', ensureLoggedIn, async (req, res, next) => {
+  try {
+    const recs = await User.getAllSentRecs(req.user.id);
+    return res.json(recs);
+  }
+  catch (e) {
+    return next(e);
+  }
+});
+
+
 router.get('/:id', ensureLoggedIn, async (req, res, next) => {
   try {
     const rec = await Recommendation.getById(req.params.id);
