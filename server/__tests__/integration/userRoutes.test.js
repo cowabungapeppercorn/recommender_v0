@@ -84,6 +84,15 @@ describe("User Routes Tests", () => {
       expect(response.statusCode).toEqual(401);
       expect(response.body.message).toEqual("You are not logged in.");
     });
+
+    test("Returns 404 if no users found", async () => {
+      await User.remove(1);
+      const response = await request(app)
+        .get('/users')
+        .send({ _token });
+      expect(response.statusCode).toEqual(404);
+      expect(response.body.message).toEqual("No users found.");
+    });
   });
 
   describe("GET /users/:id", () => {
@@ -141,6 +150,23 @@ describe("User Routes Tests", () => {
       expect(response.statusCode).toEqual(401);
       expect(response.body.message).toEqual("You are not logged in.");
     });
+
+    test("Throws an error when invalid fields added", async () => {
+      const response = await request(app)
+        .patch("/users/1")
+        .send({ _token, hobby: "swimming" });
+      expect(response.statusCode).toEqual(500);
+      expect(response.body.message).toEqual('column "hobby" of relation "users" does not exist');
+    });
+
+    test("Returns 404 if user not found", async () => {
+      await User.remove(1);
+      const response = await request(app)
+        .patch("/users/1")
+        .send({ _token, username: "testito" });
+      expect(response.statusCode).toEqual(404);
+      expect(response.body.message).toEqual("The user with an id of 1 cannot be found.");
+    });
   });
 
   describe("DELETE /users/:id", () => {
@@ -169,6 +195,15 @@ describe("User Routes Tests", () => {
         .delete("/users/1");
       expect(response.statusCode).toEqual(401);
       expect(response.body.message).toEqual("You are not logged in.");
+    });
+
+    test("Returns 404 if user not found", async () => {
+      await User.remove(1);
+      const response = await request(app)
+        .delete("/users/1")
+        .send({ _token });
+      expect(response.statusCode).toEqual(404);
+      expect(response.body.message).toEqual("The user with an id of 1 cannot be found.");
     });
   });
 });

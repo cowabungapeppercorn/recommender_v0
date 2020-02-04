@@ -34,6 +34,24 @@ describe("User Model Tests", () => {
       expect(user.id).toEqual(1);
       expect(user.is_admin).toEqual(false);
     });
+
+    test("Throws 400 error if username not included", async () => {
+      try {
+        await User.register({ password: "password" });
+      } catch (e) {
+        expect(e.status).toEqual(400);
+        expect(e.message).toEqual("Must provide a username.")
+      }
+    });
+
+    test("Throws 400 error if password not included", async () => {
+      try {
+        await User.register({ username: "testing" });
+      } catch (e) {
+        expect(e.status).toEqual(400);
+        expect(e.message).toEqual("Must provide a password.")
+      }
+    });
   });
 });
 
