@@ -27,7 +27,7 @@ const ensureLoggedIn = (req, res, next) => {
 
 
 const ensureCorrectUser = (req, res, next) => {
-  if (req.user.username === req.params.username) {
+  if (req.user.id === parseInt(req.params.id)) {
     return next();
   } else {
     const notAuthorizedErr = new Error("You are not authorized to perform that action.");
