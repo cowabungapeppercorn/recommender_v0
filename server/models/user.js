@@ -52,7 +52,7 @@ class User {
 
   static async authenticate(data) {
     const result = await db.query(
-      `SELECT username, password, is_admin FROM users
+      `SELECT id, username, password, is_admin FROM users
         WHERE username = $1`,
         [data.username]);
     const user = result.rows[0];
@@ -130,18 +130,19 @@ class User {
 
 
   static async remove(id) {
-    let result = await db.query(
+    const result = await db.query(
       `DELETE FROM users
         WHERE id = $1
         RETURNING username`, [id]);
+      const user = result.rows[0];
 
-    if (!result.rows.length) {
+    if (!user) {
       const notFound = new Error(`The user with an id of ${id} cannot be found.`);
       notFound.status = 404;
       throw notFound;
     }
 
-    return result.rows[0];
+    return user;
   }
 
 }

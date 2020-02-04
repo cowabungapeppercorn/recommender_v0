@@ -42,10 +42,10 @@ router.post('/', async (req, res, next) => {
 });
 
 
-router.patch('/:id', ensureCorrectUser, async (req, res, next) => {
+router.patch('/:id', ensureLoggedIn, ensureCorrectUser, async (req, res, next) => {
   try{
     const user = await User.update(req.params.id, req.body);
-    return res.json({ user });
+    return res.json(user);
   }
   catch (e) {
     return next(e);
@@ -53,7 +53,7 @@ router.patch('/:id', ensureCorrectUser, async (req, res, next) => {
 });
 
 
-router.delete('/:id', ensureCorrectUser, async (req, res, next) => {
+router.delete('/:id', ensureLoggedIn, ensureCorrectUser, async (req, res, next) => {
   try {
     const user = await User.remove(req.params.id);
     return res.json({ message: `User '${user.username}' deleted.` });
