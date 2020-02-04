@@ -4,6 +4,7 @@
   "description": "Node server for Recommender",
   "main": "server.js",
   "scripts": {
+    "test-coverage": "jest -i --collect-coverage",
     "test": "jest -i"
   },
   "author": "cowabungapeppercorn",
