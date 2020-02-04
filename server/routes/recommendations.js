@@ -8,7 +8,7 @@ const { ensureLoggedIn } = require('../middleware/auth');
 router.get('/:id', ensureLoggedIn, async (req, res, next) => {
   try {
     const rec = await Recommendation.getById(req.params.id);
-    const user = await User.getByUsername(req.user.username);
+    const user = await User.getById(req.user.id);
 
     if (rec.from.id === user.id || rec.to.id === user.id) {
       return res.json(rec);
@@ -26,8 +26,8 @@ router.get('/:id', ensureLoggedIn, async (req, res, next) => {
 
 router.post('/', ensureLoggedIn, async (req, res, next) => {
   try {
-    const userFrom = await User.getByUsername(req.user.username);
-    const userTo = await User.getByUsername(req.body.user_to);
+    const userFrom = await User.getById(req.user.id);
+    const userTo = await User.getById(req.body.user_to);
 
     const recommendation = await Recommendation.create({
       user_to: userTo.id,
