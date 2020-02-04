@@ -43,7 +43,7 @@ class User {
         username,
         password)
         VALUES ($1, $2)
-        RETURNING username, is_admin`,
+        RETURNING id, username, is_admin`,
       [data.username, hashedPassword]);
     
     return result.rows[0];
@@ -85,14 +85,14 @@ class User {
   }
 
 
-  static async getByUsername(username) {
+  static async getById(id) {
     const result = await db.query(
       `SELECT id, username FROM users
-        WHERE username = $1`, [username]);
+        WHERE id = $1`, [id]);
     const user = result.rows[0];
     
     if (!user) {
-      const notFound = new Error(`The user ${username} cannot be found.`);
+      const notFound = new Error(`The user with an id of ${id} cannot be found.`);
       notFound.status = 404;
       throw notFound;
     }
@@ -101,7 +101,7 @@ class User {
   }
 
 
-  static async update(username, data) {
+  static async update(id, data) {
     if (data.password) {
       data.password = await bcrypt.hash(data.password, BCRYPT_WORK_FACTOR);
     }
@@ -109,15 +109,15 @@ class User {
     const { query, values } = partialUpdate(
       'users',
       data,
-      'username',
-      username
+      'id',
+      id
     );
 
     const result = await db.query(query, values);
     const user = result.rows[0];
 
     if (!user) {
-      const notFound = new Error(`The user '${username}' cannot be found.`);
+      const notFound = new Error(`The user with an id of ${id} cannot be found.`);
       notFound.status = 404;
       throw notFound;
     }
@@ -129,14 +129,14 @@ class User {
   }
 
 
-  static async remove(username) {
+  static async remove(id) {
     let result = await db.query(
       `DELETE FROM users
-        WHERE username = $1
-        RETURNING username`, [username]);
+        WHERE id = $1
+        RETURNING username`, [id]);
 
     if (!result.rows.length) {
-      const notFound = new Error(`The user '${username}' cannot be found.`);
+      const notFound = new Error(`The user with an id of ${id} cannot be found.`);
       notFound.status = 404;
       throw notFound;
     }

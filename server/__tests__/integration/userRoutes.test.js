@@ -35,7 +35,7 @@ describe("User Routes Tests", () => {
       const response = await request(app)
         .post('/users')
         .send(data);
-      const userInDb = await User.getByUsername("johnbasedowfan");
+      const userInDb = await User.getById(2);
 
       expect(response.statusCode).toEqual(201);
       expect(response.body).toHaveProperty("token");
@@ -86,10 +86,10 @@ describe("User Routes Tests", () => {
     });
   });
 
-  describe("GET /users/:username", () => {
+  describe("GET /users/:id", () => {
     test("Gets one user", async () => {
       const response = await request(app)
-        .get('/users/tester')
+        .get('/users/1')
         .send({ _token });
       const user = response.body.user;
       expect(user.username).toEqual("tester");
@@ -98,17 +98,17 @@ describe("User Routes Tests", () => {
 
     test("Returns 401 if not logged in", async () => {
       const response = await request(app)
-        .get('/users/tester');
+        .get('/users/1');
       expect(response.statusCode).toEqual(401);
       expect(response.body.message).toEqual("You are not logged in.");
     });
 
     test("Returns 404 if user not found", async () => {
       const response = await request(app)
-        .get('/users/testeroni')
+        .get("/users/69420")
         .send({ _token });
       expect(response.statusCode).toEqual(404);
-      expect(response.body.message).toEqual("The user testeroni cannot be found.");
+      expect(response.body.message).toEqual("The user with an id of 69420 cannot be found.");
     });
   });
 });
