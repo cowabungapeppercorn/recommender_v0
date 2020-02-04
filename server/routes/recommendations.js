@@ -5,6 +5,17 @@ const User = require('../models/user');
 const { ensureLoggedIn } = require('../middleware/auth');
 
 
+router.get('/received', ensureLoggedIn, async (req, res, next) => {
+  try {
+    const recs = await User.getAllReceivedRecs(req.user.id);
+    return res.json(recs);
+  }
+  catch (e) {
+    return next(e);
+  }
+});
+
+
 router.get('/:id', ensureLoggedIn, async (req, res, next) => {
   try {
     const rec = await Recommendation.getById(req.params.id);
