@@ -48,6 +48,23 @@ class Recommendation {
     return result.rows[0];
   }
 
+
+  static async remove(id) {
+    const result = await db.query(
+      `DELETE FROM recommendations
+        WHERE id = $1
+        RETURNING id`, [id]);
+    const deletedRec = result.rows[0];
+
+    if (!deletedRec) {
+      const notFound = new Error(`The recommendation with an id of ${id} cannot be found.`);
+      notFound.status = 404;
+      throw notFound;
+    }
+
+    return deletedRec;
+  }
+
 }
 
 module.exports = Recommendation;
