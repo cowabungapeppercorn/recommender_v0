@@ -5,9 +5,6 @@ const createToken = require('../helpers/createToken');
 const { ensureLoggedIn, ensureCorrectUser } = require('../middleware/auth');
 
 
-/** CRUD ROUTES FOR USER **/
-
-
 router.get('/:id', ensureLoggedIn, async (req, res, next) => {
   try {
     const user = await User.getById(req.params.id);
