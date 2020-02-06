@@ -37,7 +37,13 @@ describe("Recommendation Routes Tests", () => {
     await Rec.create({
       user_from: 2,
       user_to: 3,
-      content: "test can't see this"
+      content: "tester can't see this"
+    });
+
+    await Rec.create({
+      user_from: 3,
+      user_to: 1,
+      content: "test this recommendation"
     });
 
     const res = await request(app)
@@ -89,6 +95,64 @@ describe("Recommendation Routes Tests", () => {
     });
   });
 
+  describe("GET /recommendations/received", () => {
+    test("Gets all received recommendations (1 rec)", async () => {
+      const response = await request(app)
+        .get('/recommendations/received')
+        .send({ _token });
+      expect(response.statusCode).toEqual(200);
+      expect(response.body.length).toEqual(1);
+      expect(response.body[0].user_from).toEqual(3);
+      expect(response.body[0].username_from).toEqual("tester3");
+      expect(response.body[0].content).toEqual("test this recommendation");
+    });
+
+    test("Returns 401 if not logged in", async() => {
+      const response = await request(app)
+        .get('/recommendations/received');
+      expect(response.statusCode).toEqual(401);
+      expect(response.body.message).toEqual("You are not logged in.");
+    });
+
+    test("Returns 404 if no received recommendations found", async () => {
+      await Rec.remove(3);
+      const response = await request(app)
+        .get('/recommendations/received')
+        .send({ _token });
+      expect(response.statusCode).toEqual(404);
+      expect(response.body.message).toEqual("No received recommendations found for user with id of 1")
+    });
+  });
+
+  describe("GET /recommendations/sent", () => {
+    test("Gets all sent recommendations (1 rec)", async () => {
+      const response = await request(app)
+        .get('/recommendations/sent')
+        .send({ _token });
+      expect(response.statusCode).toEqual(200);
+      expect(response.body.length).toEqual(1);
+      expect(response.body[0].user_to).toEqual(2);
+      expect(response.body[0].username_to).toEqual("tester2");
+      expect(response.body[0].content).toEqual("Watch a movie");
+    });
+
+    test("Returns 401 if not logged in", async() => {
+      const response = await request(app)
+        .get('/recommendations/sent');
+      expect(response.statusCode).toEqual(401);
+      expect(response.body.message).toEqual("You are not logged in.");
+    });
+
+    test("Returns 404 if no sent recommendations found", async () => {
+      await Rec.remove(1);
+      const response = await request(app)
+        .get('/recommendations/sent')
+        .send({ _token });
+      expect(response.statusCode).toEqual(404);
+      expect(response.body.message).toEqual("No sent recommendations found for user with id of 1")
+    });
+  });
+
   describe("GET /recommendations/:id", () => {
     test("Gets one recommendation", async () => {
       const response = await request(app)
@@ -121,6 +185,31 @@ describe("Recommendation Routes Tests", () => {
         .send({ _token });
       expect(response.statusCode).toEqual(401);
       expect(response.body.message).toEqual("You are not authorized to view this recommendation.");
+    });
+  });
+
+  describe("DELETE /recommendations/:id", () => {
+    test("Deletes 1 recommendation", async () => {
+      const response = await request(app)
+        .delete('/recommendations/1')
+        .send({ _token });
+      expect(response.statusCode).toEqual(200);
+      expect(response.body).toEqual("Recommendation with id of 1 deleted.")
+    });
+
+    test("Returns 401 if not logged in", async () => {
+      const response = await request(app)
+        .delete('/recommendations/1');
+      expect(response.statusCode).toEqual(401);
+      expect(response.body.message).toEqual("You are not logged in.");
+    });
+
+    test("Returns 401 if user didn't send recommendation", async () => {
+      const response = await request(app)
+        .delete('/recommendations/2')
+        .send({ _token });
+      expect(response.statusCode).toEqual(401);
+      expect(response.body.message).toEqual("You are not authorized to perform that action.")
     });
   });
 });
