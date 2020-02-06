@@ -176,7 +176,7 @@ describe("Recommendation Routes Tests", () => {
         .get('/recommendations/69')
         .send({ _token });
       expect(response.statusCode).toEqual(404);
-      expect(response.body.message).toEqual("The recommendation with an id of '69' cannot be found.");
+      expect(response.body.message).toEqual("The recommendation with an id of 69 cannot be found.");
     });
 
     test("Returns 401 if user didn't send or receive recommendation", async () => {
@@ -210,6 +210,14 @@ describe("Recommendation Routes Tests", () => {
         .send({ _token });
       expect(response.statusCode).toEqual(401);
       expect(response.body.message).toEqual("You are not authorized to perform that action.")
+    });
+
+    test("Returns 404 if recommendation not found", async () => {
+      const response = await request(app)
+        .delete('/recommendations/25')
+        .send({ _token });
+      expect(response.statusCode).toEqual(404);
+      expect(response.body.message).toEqual("The recommendation with an id of 25 cannot be found.")
     });
   });
 });
