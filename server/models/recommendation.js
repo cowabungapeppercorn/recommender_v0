@@ -15,7 +15,7 @@ class Recommendation {
     const rec = result.rows[0];
 
     if (!rec) {
-      const notFound = new Error(`The recommendation with an id of '${id}' cannot be found.`);
+      const notFound = new Error(`The recommendation with an id of ${id} cannot be found.`);
       notFound.status = 404;
       throw notFound;
     }
