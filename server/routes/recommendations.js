@@ -67,7 +67,7 @@ router.post('/', ensureLoggedIn, async (req, res, next) => {
 router.delete('/:id', ensureLoggedIn, async (req, res, next) => {
   try {
     const rec = await Recommendation.getById(req.params.id);
-    if (req.user.id !== rec.from.id && req.user.id !== rec.to.id) {
+    if (req.user.id !== rec.from.id) {
       const notAuthorizedErr = new Error("You are not authorized to perform that action.");
       notAuthorizedErr.status = 401;
       throw notAuthorizedErr;
