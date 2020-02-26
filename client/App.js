@@ -1,23 +1,32 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { createAppContainer, createSwitchNavigator } from 'react-navigation';
+import { createStackNavigator } from 'react-navigation-stack';
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.text}>RECOMMENDER</Text>
-    </View>
-  );
-}
+import LoadingScreen from './src/screens/LoadingScreen';
+import LoginScreen from './src/screens/LoginScreen';
+import RegisterScreen from './src/screens/RegisterScreen';
+import HomeScreen from './src/screens/HomeScreen';
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+const switchNavigator = createSwitchNavigator(
+  {
+    Loading: LoadingScreen,
+    authFlow: createStackNavigator({
+      Login: LoginScreen,
+      Register: RegisterScreen
+    }),
+    mainFlow: createStackNavigator({
+      Home: HomeScreen,
+    })
   },
-  text: {
-    fontSize: 36,
-    fontWeight: '800'
+  {
+    initialRouteName: 'Loading',
   }
-});
+);
+
+const App = createAppContainer(switchNavigator);
+
+export default () => {
+  return (
+    <App />
+  );
+};
